@@ -182,4 +182,32 @@ module Necesario
         end
         gets
     end
+    def self.registrar_libros(cola_libros, n, i, a, pr)
+        if cola_libros[:tope] == nil && cola_libros[:fondo] == nil
+            nuevo_libro = {
+            nombre: n,
+            isbn: i,
+            autor: a,
+            precio: pr,
+            existencia: 1,
+            posicion: 0,
+            siguiente: nil
+            }
+            cola_libros[:tope] = nuevo_libro
+            cola_libros[:final] = nuevo_libro
+        else
+            nuevo_libro = {
+            nombre: n,
+            isbn: i,
+            autor: a,
+            precio: pr,
+            existencia: 1,
+            posicion: cola_libros[:size],
+            siguiente: nil
+            }
+            ultimo_libro = cola_libros[:final]
+            ultimo_libro[:siguiente] = nuevo_libro
+            cola_libros[:final] = nuevo_libro
+        end
+    end 
 end

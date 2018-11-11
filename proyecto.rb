@@ -45,54 +45,36 @@ def registrar_libros_mismo_isbn(cola_libros, n, i, a, pr)
     end
     if ya_estaba == false
         cola_libros[:size] += 1
-        registrar_libros(cola_libros, n, i, a, pr)
+        Necesario.registrar_libros(cola_libros, n, i, a, pr)
     end
 end
-def registrar_libros(cola_libros, n, i, a, pr)
-    if cola_libros[:tope] == nil && cola_libros[:fondo] == nil
-        nuevo_libro = {
-        nombre: n,
-        isbn: i,
-        autor: a,
-        precio: pr,
-        existencia: 1,
-        posicion: 0,
-        siguiente: nil
-        }
-        cola_libros[:tope] = nuevo_libro
-        cola_libros[:final] = nuevo_libro
-    else
-        nuevo_libro = {
-        nombre: n,
-        isbn: i,
-        autor: a,
-        precio: pr,
-        existencia: 1,
-        posicion: cola_libros[:size],
-        siguiente: nil
-        }
-        ultimo_libro = cola_libros[:final]
-        ultimo_libro[:siguiente] = nuevo_libro
-        cola_libros[:final] = nuevo_libro
-    end
-end 
 def eliminar_libro_existencia(cola_libros, isbn)
     aux = cola_libros[:tope]
     for i in (0 .. cola_libros[:size] - 1)
-        break if aux[:isbn] == isbn
-        break if aux[:siguiente] == nil
-        aux = aux[:siguiente]
+         break if aux[:isbn] == isbn
+         break if aux[:siguiente] == nil
+         anterior = aux
+         aux = aux[:siguiente]
     end
-    if aux[:siguiente] == nil
-        #Para eliminar si el tope tiene 0 existencias
-        if aux[:existencia] == 0
+    #Aqui detecta de cuando compramos si nos acabamos las existencias
+    if aux[:existencia] == 0
+        #En el tope
+        if cola_libros[:tope] == aux && cola_libros[:tope][:siguiente] == nil
             cola_libros[:tope] = nil
-            cola_libros[:fondo] = nil 
-        end
-    elsif aux[:siguiente] == cola_libros[:fondo]
-        if aux[:existencia] == 0
-            cola_libros[:tope] = cola_libros[:fondo]
-            cola_libros[:fondo] = cola_libros[:tope]
+            cola_libros[:final] = nil
+        #Si hay solo un elemento
+        elsif cola_libros[:tope] == aux && cola_libros[:siguiente] == cola_libros[:final]
+            elimino = cola_libros[:tope] 
+            elimino[:siguiente] = nil
+            cola_libros[:tope] = cola_libros[:final]
+        #Si elimino el final
+        elsif cola_libros[:final] == aux
+            anterior[:siguiente] = nil
+            cola_libros[:final] = anterior
+        #Si elimino en el centro
+        else
+            anterior[:siguiente] = aux[:siguiente]
+            aux[:siguiente] = nil
         end
     end
 end  
@@ -101,8 +83,6 @@ def ventas(cola_libros, cola_historial_ventas)
     puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Ingrese el isbn del libro'])
     isbn_ventas = gets.chomp.to_i
     aux = cola_libros[:tope]
-    esta1 = false
-    hay_exis = false
     sumtotal=0
     contv = 1
     for i in (0 .. cola_libros[:size] - 1)
@@ -147,8 +127,8 @@ def ventas(cola_libros, cola_historial_ventas)
                     puts sumtotal
                 end
             end
-            break if aux[:siguente] == nil
         end
+        break if aux[:siguiente] == nil
         aux = aux[:siguiente]
     end
 end
@@ -168,7 +148,6 @@ begin
                 Necesario.validar_autores(cola_autores, 0, cola_libros)
             elsif opcion1 == 'C'
                 puts cola_libros[:tope]
-                puts cola_libros[:size]
                 gets
             elsif opcion1 == 'D'
                 Necesario.mostrar_autores(cola_autores, cola_libros)
