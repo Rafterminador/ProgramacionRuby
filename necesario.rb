@@ -103,4 +103,33 @@ module Necesario
         end
         gets
     end
+    def self.buscar_isbn(cola_libros)
+        limpiar_pantalla
+        if vacia(cola_libros)
+            puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['No hay libros a buscar'])
+        else
+            puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Que libro desea buscar? abajo ingrese su isbn'])
+            isbn = gets.to_i
+            esta = false
+            aux2 = cola_libros[:tope]
+            for i in (0 .. cola_libros[:size])
+                if isbn == aux2[:isbn]
+                    esta = true
+                    aux3 = aux2
+                end
+                break if aux2[:siguiente] == nil
+                aux2 = aux2[:siguiente]
+            end
+            if esta == true
+                puts "Su isbn es: #{aux3[:isbn]}"
+                puts "Su nombre es: #{aux3[:nombre]}"
+                puts "Su autor es: #{aux3[:autor]}"
+                puts "Su precio es: #{aux3[:precio]}"
+                puts "Su existencias son: "#Aqui llamamos a la funcion existencias
+            else
+                puts 'El isbn que ingreso es invalido o no hay existencias'
+            end
+        end
+        gets
+    end
 end
