@@ -21,16 +21,62 @@ cola_ventas = {
 cola_historial_ventas = {
     tope: nil,
     fondo: nil,
-    max: 2,
+    #Para que asi se almacenen las ultimas 20 ventas
+    max: 21,
     posicion: 0
 }
+def mostrar_ventas(cola_historial_ventas)
+    aux = cola_historial_ventas[:tope]
+    for i in (0 .. cola_historial_ventas[:posicion] - 1)
+        puts "#{i + 1} de la lista:"
+        puts "ISBN: #{aux[:isbn]}"
+        puts "Autor: #{aux[:autor]}"
+        puts "Nombre: #{aux[:nombre]}"
+        puts "Precio: #{aux[:precio]}"
+        break if aux[:siguiente] ==  nil
+        aux = aux[:siguiente]
+    end
+end
 def regular_ultimas_ventas(cola_historial_ventas, cod_col, isbn, autor, nombre, precio)
     if cola_historial_ventas[:posicion] < cola_historial_ventas[:max]
         Necesario.ingresar_historial(cola_historial_ventas, cod_col, isbn, autor, nombre, precio)
+    else
+        e = {
+            cod: cod_col,
+            isbn: isbn,
+            autor: autor,
+            nombre: nombre,
+            precio: precio,
+            siguiente: nil
+        }
+        cola_historial_ventas[:fondo][:siguiente] = e
+        cola_historial_ventas[:fondo] = e
+        elimino = cola_historial_ventas[:tope]
+        cola_historial_ventas[:tope] = elimino[:siguiente]
+        elimino[:siguiente] = nil
     end
 end
 def buscar_venta(cola_historial_ventas, cod)
-    
+    aux = cola_historial_ventas[:tope]
+    esta = false
+    for i in (0 .. cola_historial_ventas[:posicion] - 1)
+        if aux[:cod] == cod
+            esta = true
+            break
+        end
+        break if aux[:siguiente] == nil
+        aux = aux[:siguiente]
+    end
+    if esta == true
+        puts "EL codigo de venta #{aux[:cod]}"
+        puts "Compro un libro con las siguientes características:"
+        puts "ISBN: #{aux[:isbn]}"
+        puts "Autor: #{aux[:autor]}"
+        puts "Nombre: #{aux[:nombre]}"
+        puts "Precio: #{aux[:precio]}"
+    else
+        puts 'No esta su codigo de venta ya a de ser retirado del sistema'
+    end
 end
 def registrar_libros_mismo_isbn(cola_libros, n, i, a, pr)
     aux = cola_libros[:tope]
@@ -58,11 +104,11 @@ def eliminar_libro_existencia(cola_libros, isbn)
     end
     #Aqui detecta de cuando compramos si nos acabamos las existencias
     if aux[:existencia] == 0
-        #En el tope
+        #Elimino unico elemento
         if cola_libros[:tope] == aux && cola_libros[:tope][:siguiente] == nil
             cola_libros[:tope] = nil
             cola_libros[:final] = nil
-        #Si hay solo un elemento
+        #Si hay solo dos elementos
         elsif cola_libros[:tope] == aux && cola_libros[:siguiente] == cola_libros[:final]
             elimino = cola_libros[:tope] 
             elimino[:siguiente] = nil
@@ -71,6 +117,11 @@ def eliminar_libro_existencia(cola_libros, isbn)
         elsif cola_libros[:final] == aux
             anterior[:siguiente] = nil
             cola_libros[:final] = anterior
+        #Elimino el tope
+        elsif cola_libros[:tope] == aux
+            elimino = cola_libros[:tope]
+            cola_libros[:tope] = elimino[:siguiente]
+            elimino[:siguiente] = nil
         #Si elimino en el centro
         else
             anterior[:siguiente] = aux[:siguiente]
@@ -147,8 +198,13 @@ begin
             elsif opcion1 == 'B'
                 Necesario.validar_autores(cola_autores, 0, cola_libros)
             elsif opcion1 == 'C'
-                puts cola_libros[:tope]
-                gets
+                if cola_libros[:tope] != nil
+                    puts cola_libros[:tope]
+                    gets
+                else
+                    puts 'No hay libros a mostrar'
+                    gets
+                end
             elsif opcion1 == 'D'
                 Necesario.mostrar_autores(cola_autores, cola_libros)
             elsif opcion1 == 'E'
@@ -177,7 +233,22 @@ begin
                     gets
                 end
             elsif opcion2 == 'B'
-                puts cola_historial_ventas[:tope]
+                Necesario.limpiar_pantalla
+                if cola_historial_ventas[:tope] != nil
+                    puts 'Ingrese el codigo a buscar'
+                    x = gets.to_i
+                    buscar_venta(cola_historial_ventas, x)
+                else
+                    puts 'No hay historial de ventas aun'
+                end
+                gets
+            elsif opcion2 == 'C'
+                Necesario.limpiar_pantalla
+                if cola_historial_ventas[:tope] != nil
+                    mostrar_ventas(cola_historial_ventas)
+                else
+                    puts 'No hay ventas a mostrar'
+                end
                 gets
             end
             Necesario.limpiar_pantalla

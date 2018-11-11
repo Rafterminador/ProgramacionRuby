@@ -145,7 +145,7 @@ module Necesario
             cola_historial_ventas[:tope] = element
             cola_historial_ventas[:fondo] = element
         else
-            cola_historial_ventas[:fondo][:siguiente] = element
+            cola_historial_ventas[:tope][:siguiente] = element
             cola_historial_ventas[:fondo] = element
         end
     end
