@@ -149,4 +149,37 @@ module Necesario
             cola_historial_ventas[:fondo] = element
         end
     end
+    def self.buscar_autor(cola_libros, cola_autores)
+        limpiar_pantalla
+        esta = false
+        aux = cola_autores[:tope]
+        aux2 = cola_libros[:tope]
+        if cola_autores[:tope] == nil && cola_autores[:fondo] == nil
+          puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['No hay autores a mostrar'])
+        else
+            puts 'Ingrese el autor a buscar'
+            x = gets.chomp.upcase
+            for i in (0 .. cola_autores[:posicion] - 1)
+                if aux[:valor] == x
+                esta = true
+                puts "El autor es: #{aux[:valor]}"
+                puts "Sus libros que tiene son: "
+                for i in (0 .. cola_libros[:size] - 1)
+                    if aux[:valor] == aux2[:autor]
+                        print "#{aux2[:nombre]}, "
+                    end
+                    break if aux2[:siguiente] == nil
+                    aux2 = aux2[:siguiente]
+                end
+                end
+                aux2 = cola_libros[:tope]
+                break if aux2[:siguiente] == nil
+                aux = aux[:siguiente]
+            end
+        end
+        if esta == false
+            puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Su autor no se encuentra en la base de datos'])
+        end
+        gets
+    end
 end
