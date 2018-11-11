@@ -52,7 +52,7 @@ module Necesario
             if num == 0
               puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Ya está en autores, no será agregado'])
             else
-                registrar_libros(cola_libros, nam, is, aut, pri)
+                registrar_libros_mismo_isbn(cola_libros, nam, is, aut, pri)
             end
         else
             if cola_autores[:posicion] < cola_autores[:max]
@@ -67,7 +67,7 @@ module Necesario
                 condicional = false
             end
             if condicional != false && num == 1
-                registrar_libros(cola_libros, nam, is, aut, pri)
+                registrar_libros_mismo_isbn(cola_libros, nam, is, aut, pri)
             end
         end
         gets

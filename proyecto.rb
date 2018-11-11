@@ -32,6 +32,22 @@ end
 def buscar_venta(cola_historial_ventas, cod)
     
 end
+def registrar_libros_mismo_isbn(cola_libros, n, i, a, pr)
+    aux = cola_libros[:tope]
+    ya_estaba = false
+    for j in (0 .. cola_libros[:size] - 1)
+        if aux[:isbn] == i
+            aux[:existencia] += 1
+            ya_estaba = true
+        end
+        break if aux[:siguiente] == nil
+        aux = aux[:siguiente]
+    end
+    if ya_estaba == false
+        cola_libros[:size] += 1
+        registrar_libros(cola_libros, n, i, a, pr)
+    end
+end
 def registrar_libros(cola_libros, n, i, a, pr)
     if cola_libros[:tope] == nil && cola_libros[:fondo] == nil
         nuevo_libro = {
@@ -59,33 +75,7 @@ def registrar_libros(cola_libros, n, i, a, pr)
         ultimo_libro[:siguiente] = nuevo_libro
         cola_libros[:final] = nuevo_libro
     end
-    cola_libros[:size] += 1
-    aux = cola_libros[:tope]
-    valor = false
-    # if aux[:siguiente] != nil
-    # loop do
-    #     break if aux[:siguiente] == nil
-    #     siguiente = aux[:siguiente]
-    #     isbn = aux[:isbn]
-    #     if isbn == siguiente[:isbn]
-    #         aux[:existencia] += 1
-    #         valor = true
-    #     end
-    #     aux = aux[:siguiente]
-    # end
-    # if valor == true
-    #     for i in (0..aux[:posicion] + 1)
-    #         eliminar_libro(cola_libros)
-    #     end
-    # end
-    # end
-end
-# def eliminar_libro(cola_libros)
-#     aux = cola_libros[:tope]
-#     siguiente = aux[:siguiente]
-#     siguiente = cola_libros[:tope]
-#     aux[:siguiente] = nil
-# end  
+end 
 def eliminar_libro_existencia(cola_libros, isbn)
     aux = cola_libros[:tope]
     for i in (0 .. cola_libros[:size] - 1)
@@ -178,6 +168,7 @@ begin
                 Necesario.validar_autores(cola_autores, 0, cola_libros)
             elsif opcion1 == 'C'
                 puts cola_libros[:tope]
+                puts cola_libros[:size]
                 gets
             elsif opcion1 == 'D'
                 Necesario.mostrar_autores(cola_autores, cola_libros)
