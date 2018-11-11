@@ -132,4 +132,21 @@ module Necesario
         end
         gets
     end
+    def self.ingresar_historial(cola_historial_ventas, cod, isbn, autor, nombre, precio)
+        element = {
+            cod: cod,
+            isbn: isbn,
+            autor: autor,
+            nombre: nombre,
+            precio: precio,
+            siguiente: nil
+        }
+        if cola_historial_ventas[:tope] == nil && cola_historial_ventas[:fondo] == nil
+            cola_historial_ventas[:tope] = element
+            cola_historial_ventas[:fondo] = element
+        else
+            cola_historial_ventas[:fondo][:siguiente] = element
+            cola_historial_ventas[:fondo] = element
+        end
+    end
 end

@@ -23,23 +23,6 @@ cola_historial_ventas = {
     tope: nil,
     fondo: nil,
 }
-def ingresar_historial(cola_historial_ventas, cod, isbn, autor, nombre, precio)
-    element = {
-        cod: cod,
-        isbn: isbn,
-        autor: autor,
-        nombre: nombre,
-        precio: precio,
-        siguiente: nil
-    }
-    if cola_historial_ventas[:tope] == nil && cola_historial_ventas[:fondo] == nil
-        cola_historial_ventas[:tope] = element
-        cola_historial_ventas[:fondo] = element
-    else
-        cola_historial_ventas[:fondo][:siguiente] = element
-        cola_historial_ventas[:fondo] = element
-    end
-end
 def buscar_autor(cola_libros, cola_autores)
     Necesario.limpiar_pantalla
     esta = false
@@ -73,7 +56,6 @@ def buscar_autor(cola_libros, cola_autores)
     end
     gets
 end
-
 def registrar_libros(cola_libros, n, i, a, pr)
     if Necesario.vacia(cola_libros)
         nuevo_libro = {
@@ -104,23 +86,25 @@ def registrar_libros(cola_libros, n, i, a, pr)
     cola_libros[:size] += 1
     aux = cola_libros[:tope]
     valor = false
-    loop do
-        siguiente = aux[:siguiente]
-        isbn = aux[:isbn]
-        if aux[:siguiente] == nil
-            break
-        else
-            if isbn == siguiente[:isbn]
-                aux[:existencia] += 1
-                valor = true
-                #break
+    if cola_libros[:tope][:siguiente] != nil
+        loop do
+            siguiente = aux[:siguiente]
+            isbn = aux[:isbn]
+            if aux[:siguiente] == nil
+                break
+            else
+                if isbn == siguiente[:isbn]
+                    aux[:existencia] += 1
+                    valor = true
+                    #break
+                end
             end
+            aux = aux[:siguiente]
         end
-        aux = aux[:siguiente]
-    end
-    if valor == true
-        for i in (0..aux[:posicion] + 1)
-            eliminar_libro(cola_libros)
+        if valor == true
+            for i in (0..aux[:posicion] + 1)
+                eliminar_libro(cola_libros)
+            end
         end
     end
 end
@@ -130,9 +114,26 @@ def eliminar_libro(cola_libros)
     siguiente = cola_libros[:tope]
     aux[:siguiente] = nil
 end  
+def eliminar_libro_existencia(cola_libros, isbn)
+    aux = cola_libros[:tope]
+    for i in (0 .. cola_libros[:size] - 1)
+        break if aux[:isbn] == isbn
+        break if aux[:siguiente] == nil
+        aux = aux[:siguiente]
+    end
+    if aux[:siguiente] == nil
+        #Para eliminar si el tope tiene 0 existencias
+        if aux[:existencia] == 0
+            cola_libros[:tope] = nil
+        end
+    elsif aux[:siguiente] == cola_libros[:fondo]
+        if aux[:existencia] == 0
+            cola_libros[:tope] = cola_libros[:fondo]
+        end
+    end
+end  
 def ventas(cola_libros, cola_ventas, cola_historial_ventas)
     Necesario.limpiar_pantalla
-    # puts 'codigo de compra:'
     puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Ingrese el isbn del libro'])
     isbn_ventas = gets.chomp.to_i
     aux = cola_libros[:tope]
@@ -155,7 +156,8 @@ def ventas(cola_libros, cola_ventas, cola_historial_ventas)
                 auxtotal = aux[:precio]
                 sumtotal = auxtotal+sumtotal
                 contv +=1
-                ingresar_historial(cola_historial_ventas, cod_col, aux[:isbn], aux[:autor], aux[:nombre], aux[:precio])
+                Necesario.ingresar_historial(cola_historial_ventas, cod_col, aux[:isbn], aux[:autor], aux[:nombre], aux[:precio])
+                eliminar_libro_existencia(cola_libros, aux[:isbn])
                 puts 'el total hasta ahora es de:'
                 puts sumtotal
             else
@@ -223,7 +225,12 @@ begin
             ['D. Salir'])
             opcion2 = gets.chomp.upcase
             if opcion2 == 'A'
-                ventas(cola_libros, cola_ventas, cola_historial_ventas)
+                if cola_libros[:tope] != nil 
+                    ventas(cola_libros, cola_ventas, cola_historial_ventas)
+                else
+                    puts 'No hay libros para vender'
+                    gets
+                end
             elsif opcion2 == 'B'
                 puts cola_historial_ventas[:tope]
                 gets
