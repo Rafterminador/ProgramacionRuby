@@ -25,17 +25,17 @@ module Necesario
     def self.validar_autores(cola_autores, num, cola_libros)
         limpiar_pantalla
         if num == 1
-            puts table(['Ingrese el nombre del libro'])
+            puts 'Ingrese el nombre del libro'
             nam = gets.chomp
-            puts table(['Ingrese el isbn del libro'])
+            puts 'Ingrese el isbn del libro'
             is = gets.chomp.to_i
-            puts table(['Ingrese el nombre del autor'])
+            puts 'Ingrese el nombre del autor'
             aut = gets.chomp.upcase
-            puts table(['Ingrese el precio del libro'])
+            puts 'Ingrese el precio del libro'
             pri = gets.to_i
             name = aut
         else
-            puts table(['Ingrese el nombre del autor'])
+            puts 'Ingrese el nombre del autor'
             name = gets.chomp.upcase
         end
         esta = false
@@ -106,9 +106,9 @@ module Necesario
     def self.buscar_isbn(cola_libros)
         limpiar_pantalla
         if vacia(cola_libros)
-            puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['No hay libros a buscar'])
+            puts 'No hay libros a buscar'
         else
-            puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Que libro desea buscar? abajo ingrese su isbn'])
+            puts 'Que libro desea buscar? abajo ingrese su isbn'
             isbn = gets.to_i
             esta = false
             aux2 = cola_libros[:tope]
@@ -155,7 +155,7 @@ module Necesario
         aux = cola_autores[:tope]
         aux2 = cola_libros[:tope]
         if cola_autores[:tope] == nil && cola_autores[:fondo] == nil
-          puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['No hay autores a mostrar'])
+          puts 'No hay autores a mostrar'
         else
             puts 'Ingrese el autor a buscar'
             x = gets.chomp.upcase
@@ -178,7 +178,7 @@ module Necesario
             end
         end
         if esta == false
-            puts table([{:value => "Ruby BookStore",:alignment => :center}] , ['Su autor no se encuentra en la base de datos'])
+            puts 'Su autor no se encuentra en la base de datos'
         end
         gets
     end

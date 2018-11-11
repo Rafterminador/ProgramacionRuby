@@ -25,6 +25,37 @@ cola_historial_ventas = {
     max: 21,
     posicion: 0
 }
+def mostrar_libros(cola_autores, cola_libros)
+    Necesario.limpiar_pantalla
+        if cola_libros[:tope] != nil
+            aux1 = cola_libros[:tope]
+            aux = cola_autores[:tope]
+            puts 'Este es el listado de libros:'
+            for i in (0 .. cola_autores[:posicion] - 1)
+                puts "Autor: #{aux[:valor]}"
+                puts "Libros: " 
+                for i in (0 .. cola_libros[:size] - 1)
+                    if aux[:valor] == aux1[:autor]
+                        puts "Nombre del libro: #{aux1[:nombre]}"
+                        puts "Autor #{aux1[:autor]}"
+                        puts "ISBN #{aux1[:isbn]}"
+                        puts "Precio #{aux1[:precio]}"
+                        puts "Existencias #{aux1[:existencia]}"
+                    end
+                    break if aux1[:siguiente] == nil
+                    aux1 = aux1[:siguiente]
+                end
+                #En este paso volvemos a contar los libros y reseteamos el apuntador aux1
+                #que va buscando libros con el nombre del autor
+                aux1 = cola_libros[:tope]
+                break if aux[:siguiente] == nil
+                aux = aux[:siguiente]
+            end
+        else
+            puts 'No hay libros para mostrar'
+        end
+        gets
+end
 def mostrar_ventas(cola_historial_ventas)
     aux = cola_historial_ventas[:tope]
     for i in (0 .. cola_historial_ventas[:posicion] - 1)
@@ -198,13 +229,7 @@ begin
             elsif opcion1 == 'B'
                 Necesario.validar_autores(cola_autores, 0, cola_libros)
             elsif opcion1 == 'C'
-                if cola_libros[:tope] != nil
-                    puts cola_libros[:tope]
-                    gets
-                else
-                    puts 'No hay libros a mostrar'
-                    gets
-                end
+                mostrar_libros(cola_autores, cola_libros)
             elsif opcion1 == 'D'
                 Necesario.mostrar_autores(cola_autores, cola_libros)
             elsif opcion1 == 'E'
